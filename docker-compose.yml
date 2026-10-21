@@ -1,0 +1,8 @@
+# ParkPulse - Local Development Services Placeholder
+#
+# NOTE: Infrastructure services (Apache Kafka, Zookeeper/KRaft, and PostgreSQL)
+# will be configured and added here in future development phases.
+# No active services are defined at Phase 0.
+
+services: {}
+

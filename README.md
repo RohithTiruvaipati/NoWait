@@ -66,9 +66,25 @@ ParkPulse/
 
 ## 📌 Current Status
 
-**Phase 0: Project initialization**
+**Phase 5 & 6: React Frontend Connected to Live Backend API**
 
-The project currently contains only its initial clean directory structure, build configurations, and minimal entry points. No application functionality, database connections, Kafka topics, or external API integrations have been implemented yet.
+The platform now connects the React frontend to the Spring Boot backend:
+1. **Dropdown Selection**: Fetches all available Magic Kingdom attractions from `GET /api/rides` to populate a searchable dropdown selector.
+2. **Real-Time Ride Display**: On selecting an attraction, fetches `GET /api/rides/{id}` and displays:
+   - Attraction Name
+   - Operating Status badge (`OPERATING`, `DOWN`, `CLOSED`)
+   - Live Standby Wait Time in minutes (or N/A indicator)
+   - Last updated timestamp
+
+### 🔄 Live Data Ingestion & Parsing Flow
+
+1. **API Client (`RestClient`)**: Calls `https://api.themeparks.wiki/v1/entity/75ea578a-adc8-4116-a54d-dccb60765ef9/live`.
+2. **Entity Filtering**: The API response contains shows, entertainment, and restaurants; the parser filters items where `entityType == "ATTRACTION"`.
+3. **Queue Extraction**: Traverses `queue.STANDBY.waitTime` safely (handling null values when attractions are closed or down).
+4. **DTO Mapping**: Converts each attraction into the [`RideResponse`](backend/src/main/java/com/parkpulse/dto/RideResponse.java) record.
+5. **REST Controller Endpoints**:
+   - `GET /api/rides`: Returns all attractions and their live wait times as a JSON list.
+   - `GET /api/rides/{id}`: Looks up a specific attraction by its UUID (returns HTTP 200 with ride JSON, or HTTP 404 if not found).
 
 ---
 

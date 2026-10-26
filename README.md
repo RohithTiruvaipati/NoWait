@@ -66,15 +66,15 @@ ParkPulse/
 
 ## 📌 Current Status
 
-**Phase 5 & 6: React Frontend Connected to Live Backend API**
+**Phase 10: Predictive Wait-Time Engine & Live Smart Recommendations**
 
-The platform now connects the React frontend to the Spring Boot backend:
-1. **Dropdown Selection**: Fetches all available Magic Kingdom attractions from `GET /api/rides` to populate a searchable dropdown selector.
-2. **Real-Time Ride Display**: On selecting an attraction, fetches `GET /api/rides/{id}` and displays:
-   - Attraction Name
-   - Operating Status badge (`OPERATING`, `DOWN`, `CLOSED`)
-   - Live Standby Wait Time in minutes (or N/A indicator)
-   - Last updated timestamp
+ParkPulse now predicts future attraction wait times across multiple planning horizons and offers real-time crowd advice:
+1. **Multi-Horizon Predictive Model (+15, +30, +45 Minutes Ahead)**: Calculates linear regression ($y = mx + b$) over recent historical snapshots from PostgreSQL (past 60-minute lookback window) to project wait times at 15m, 30m, and 45m intervals into the future.
+2. **REST Prediction Endpoint**: `GET /api/rides/{id}/prediction` delivers the multi-horizon array (`horizons: [{ minutesAhead: 15, predictedWait, expectedChange }, ...]`), overall 30-min outlook, expected delta (`+15m`, `-10m`), and automated action recommendations (`RIDE_NOW`, `CONSIDER_WAITING`, `STABLE`).
+3. **Interactive Visual Dashboard**:
+   - Multi-metric projection grid displaying **Current Wait**, **+15 min**, **+30 min**, and **+45 min** side-by-side with individual delta badges.
+   - Dynamic Recommendation Banner advising visitors whether to jump in line now or hold off.
+   - Smooth AreaChart visualization showing historical snapshots scaled against 0 to accurately reflect trend changes.
 
 ### 🔄 Live Data Ingestion & Parsing Flow
 
@@ -85,6 +85,8 @@ The platform now connects the React frontend to the Spring Boot backend:
 5. **REST Controller Endpoints**:
    - `GET /api/rides`: Returns all attractions and their live wait times as a JSON list.
    - `GET /api/rides/{id}`: Looks up a specific attraction by its UUID (returns HTTP 200 with ride JSON, or HTTP 404 if not found).
+   - `GET /api/rides/{id}/history`: Returns the chronological wait time observations from PostgreSQL for charting and trend analysis.
+   - `GET /api/rides/{id}/prediction`: Delivers the 30-minute forward forecast, expected wait-time change, and visitor recommendation.
 
 ---
 
